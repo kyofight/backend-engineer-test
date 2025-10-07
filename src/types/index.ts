@@ -1,1 +1,1 @@
-export * from './blockchain.js';
+export * from './blockchain';

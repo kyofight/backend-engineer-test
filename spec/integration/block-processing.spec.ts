@@ -1,10 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
-import type { Block, Transaction } from '../../src/types/blockchain.js';
+import { describe, it, expect } from 'vitest';
+import type { Block, Transaction } from '@shared/blockchain';
 import {
   validateBlockHeight,
   validateBlockId,
   validateTransactionBalances
-} from '../../src/validation/block-validation.js';
+} from '@validation/block-validation';
 import crypto from 'crypto';
 
 describe('Block Processing Integration Tests', () => {

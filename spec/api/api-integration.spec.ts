@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
-import { registerRoutes } from '../../src/routes/index.js';
-import { concurrencyManager } from '../../src/services/concurrency-manager.js';
-import { errorHandler } from '../../src/services/error-handler.js';
+import { registerRoutes } from '@routes/index';
+import { concurrencyManager } from '@services/concurrency-manager';
+import { errorHandler } from '@services/error-handler';
 import crypto from 'crypto';
-import type { Block, Transaction } from '../../src/types/blockchain.js';
+import type { Block, Transaction } from '@shared/blockchain';
 
 // Helper function to create block ID
 function createBlockId(height: number, transactionIds: string[]): string {

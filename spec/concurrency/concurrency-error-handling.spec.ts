@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
-import { ConcurrencyManager } from '../../src/services/concurrency-manager.js';
-import { ErrorHandler, ErrorType, ErrorSeverity } from '../../src/services/error-handler.js';
+import { ConcurrencyManager } from '@services/concurrency-manager';
+import { ErrorHandler, ErrorType, ErrorSeverity } from '@services/error-handler';
 import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
-import { registerRoutes } from '../../src/routes/index.js';
+import { registerRoutes } from '@routes/index';
 import crypto from 'crypto';
-import type { Block, Transaction } from '../../src/types/blockchain.js';
+import type { Block, Transaction } from '@shared/blockchain';
 
 describe('Concurrency and Error Handling Tests', () => {
   let concurrencyManager: ConcurrencyManager;

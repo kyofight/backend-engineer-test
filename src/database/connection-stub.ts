@@ -34,11 +34,11 @@ export class DatabaseConnection {
         this.pool = {
             connect: async () => ({
                 query: async (text: string, params?: any[]) => this.handleQuery(text, params),
-                release: () => {}
+                release: () => { }
             } as PoolClient),
             query: async (text: string, params?: any[]) => this.handleQuery(text, params),
-            end: async () => {},
-            on: () => {}
+            end: async () => { },
+            on: () => { }
         } as Pool;
     }
 
@@ -101,18 +101,18 @@ export class DatabaseConnection {
     private handleQuery(text: string, params?: any[]): Promise<any> {
         const sql = text.trim().toLowerCase();
         const storage = DatabaseConnection.storage;
-        
+
         // Handle getCurrentHeight queries
         if (sql.includes('select') && sql.includes('max(height)') && sql.includes('from blocks')) {
             const maxHeight = storage.blocks.size > 0 ? Math.max(...storage.blocks.keys()) : 0;
             return Promise.resolve({ rows: [{ max_height: maxHeight }] });
         }
-        
+
         // Handle block existence check
         if (sql.includes('select') && sql.includes('from blocks') && sql.includes('where')) {
             const height = params?.[0];
             const id = params?.[1];
-            
+
             for (const [blockHeight, block] of storage.blocks) {
                 if (blockHeight === height || block.id === id) {
                     return Promise.resolve({ rows: [{ height: blockHeight, id: block.id }] });
@@ -120,21 +120,21 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle block inserts
         if (sql.includes('insert into blocks')) {
             const [height, id, transactionCount] = params || [];
             storage.blocks.set(height, { id, transaction_count: transactionCount });
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle transaction inserts
         if (sql.includes('insert into transactions')) {
             const [id, blockHeight, transactionIndex] = params || [];
             storage.transactions.set(id, { block_height: blockHeight, transaction_index: transactionIndex });
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle transaction output inserts
         if (sql.includes('insert into transaction_outputs')) {
             const [txId, outputIndex, address, value, isSpent, spentByTxId, spentAtHeight] = params || [];
@@ -150,7 +150,7 @@ export class DatabaseConnection {
             });
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle UTXO spending (UPDATE transaction_outputs SET is_spent = true)
         if (sql.includes('update transaction_outputs') && sql.includes('is_spent = true')) {
             // This should be a parameterized query for spending specific UTXOs
@@ -158,16 +158,16 @@ export class DatabaseConnection {
             // The actual implementation would need to parse the WHERE clause
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle UTXO queries
         if (sql.includes('select') && sql.includes('from transaction_outputs') && sql.includes('where')) {
             const txId = params?.[0];
             const index = params?.[1];
             const key = `${txId}:${index}`;
             const utxo = storage.transaction_outputs.get(key);
-            
+
             if (utxo) {
-                return Promise.resolve({ 
+                return Promise.resolve({
                     rows: [{
                         tx_id: utxo.transaction_id,
                         index: utxo.output_index,
@@ -181,20 +181,20 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle balance queries
         if (sql.includes('select') && sql.includes('from balances') && sql.includes('where')) {
             const address = params?.[0];
             const balance = storage.balances.get(address);
-            
+
             if (balance) {
-                return Promise.resolve({ 
+                return Promise.resolve({
                     rows: [{ balance: balance.balance.toString() }]
                 });
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle balance inserts/updates (ON CONFLICT DO UPDATE)
         if (sql.includes('insert into balances') && sql.includes('on conflict')) {
             const [address, balance, blockHeight] = params || [];
@@ -206,34 +206,34 @@ export class DatabaseConnection {
             });
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle balance recalculation queries
         if (sql.includes('select') && sql.includes('transaction_outputs') && sql.includes('group by address')) {
             // This is the balance recalculation query
             // Calculate balances from unspent UTXOs
             const balanceMap = new Map<string, number>();
-            
+
             for (const [key, utxo] of storage.transaction_outputs) {
                 if (!utxo.is_spent) {
                     const currentBalance = balanceMap.get(utxo.address) || 0;
                     balanceMap.set(utxo.address, currentBalance + utxo.value);
                 }
             }
-            
+
             const rows = Array.from(balanceMap.entries()).map(([address, balance]) => ({
                 address,
                 balance: balance.toString()
             }));
-            
+
             return Promise.resolve({ rows });
         }
-        
+
         // Handle DELETE from balances (for recalculation)
         if (sql.includes('delete from balances')) {
             storage.balances.clear();
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle transaction input inserts
         if (sql.includes('insert into transaction_inputs')) {
             const [transactionId, utxoTxId, utxoIndex, inputIndex] = params || [];
@@ -246,7 +246,7 @@ export class DatabaseConnection {
             });
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle UPDATE operations for rollback (unspend UTXOs)
         if (sql.includes('update transaction_outputs') && sql.includes('is_spent = false')) {
             // Unspend UTXOs that were spent in blocks after target height
@@ -262,7 +262,7 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Handle DELETE operations for rollback
         if (sql.includes('delete from transaction_inputs')) {
             // Remove transaction inputs for transactions in blocks after target height
@@ -275,7 +275,7 @@ export class DatabaseConnection {
                         txsToRemove.push(txId);
                     }
                 }
-                
+
                 for (const [inputKey, input] of storage.transaction_inputs) {
                     if (txsToRemove.includes(input.transaction_id)) {
                         storage.transaction_inputs.delete(inputKey);
@@ -284,7 +284,7 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         if (sql.includes('delete from transactions')) {
             // Remove transactions in blocks after target height
             if (sql.includes('block_height >')) {
@@ -300,7 +300,7 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         if (sql.includes('delete from transaction_outputs')) {
             // Remove UTXOs created in blocks after target height
             const targetHeight = params?.[0];
@@ -312,7 +312,7 @@ export class DatabaseConnection {
                         txsToRemove.push(txId);
                     }
                 }
-                
+
                 // Remove UTXOs from those transactions
                 for (const [key, utxo] of storage.transaction_outputs) {
                     if (txsToRemove.includes(utxo.transaction_id)) {
@@ -322,7 +322,7 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         if (sql.includes('delete from blocks')) {
             // Remove blocks after target height
             if (sql.includes('height >')) {
@@ -338,7 +338,7 @@ export class DatabaseConnection {
             }
             return Promise.resolve({ rows: [] });
         }
-        
+
         // Default response for other queries
         return Promise.resolve({ rows: [] });
     }
@@ -361,7 +361,7 @@ export class DatabaseTransaction {
         if (this.isCommitted || this.isRolledBack) {
             throw new Error('Transaction has already been committed or rolled back');
         }
-        
+
         // For the stub, just delegate to the main connection
         return await this.db.query(text, params);
     }
@@ -370,7 +370,7 @@ export class DatabaseTransaction {
         if (this.isCommitted || this.isRolledBack) {
             throw new Error('Transaction has already been committed or rolled back');
         }
-        
+
         this.isCommitted = true;
         // In a real implementation, this would commit the transaction
         // For the stub, we don't need to do anything special
@@ -380,7 +380,7 @@ export class DatabaseTransaction {
         if (this.isCommitted || this.isRolledBack) {
             throw new Error('Transaction has already been committed or rolled back');
         }
-        
+
         this.isRolledBack = true;
         // In a real implementation, this would rollback the transaction
         // For the stub, we don't need to do anything special

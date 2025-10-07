@@ -1,7 +1,7 @@
 import type { FastifyDynamicSwaggerOptions } from '@fastify/swagger';
 import type { FastifySwaggerUiOptions } from '@fastify/swagger-ui';
-import { baseOpenApiSpec } from '@config/openapi-base.js';
-import { schemas } from '@config/schemas.js';
+import { baseOpenApiSpec } from '@config/openapi-base';
+import { schemas } from '@config/schemas';
 
 export const swaggerOptions: FastifyDynamicSwaggerOptions = {
   openapi: {

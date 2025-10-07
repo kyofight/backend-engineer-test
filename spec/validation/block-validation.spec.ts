@@ -5,8 +5,8 @@ import {
     validateBlockId,
     validateTransactionBalance,
     validateTransactionBalances
-} from "../../src/validation/block-validation.js";
-import type { Block, Transaction } from "../../src/types/blockchain.js";
+} from "@validation/block-validation";
+import type { Block, Transaction } from "@shared/blockchain";
 
 describe("Block Height Validation", () => {
     test("should accept height 1 when no blocks exist (currentHeight = 0)", () => {

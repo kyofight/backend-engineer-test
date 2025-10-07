@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { DatabaseManager } from '../../src/services/database-manager.js';
-import type { AppConfig } from '../../src/config/app.config.js';
+import { DatabaseManager } from '@services/database-manager';
+import type { AppConfig } from '@config/app.config';
 
 // Mock the database connection
-vi.mock('../../src/database/index.js', () => ({
+vi.mock('@database/index', () => ({
   DatabaseConnection: {
     createFromUrl: vi.fn(() => ({
       getPool: vi.fn(() => ({
@@ -19,7 +19,7 @@ vi.mock('../../src/database/index.js', () => ({
   runMigrations: vi.fn()
 }));
 
-vi.mock('../../src/database/test-setup.js', () => ({
+vi.mock('@database/test-setup', () => ({
   testDatabaseSetup: vi.fn(() => Promise.resolve(true))
 }));
 
@@ -49,10 +49,10 @@ describe('Database Resilience', () => {
   describe('Database Manager Initialization', () => {
     it('should initialize without requiring immediate database connection', async () => {
       dbManager = new DatabaseManager(mockConfig);
-      
+
       // Should initialize successfully even if database is not available
       await expect(dbManager.initialize()).resolves.not.toThrow();
-      
+
       // Status should be available
       const status = dbManager.getStatus();
       expect(status).toBeDefined();
@@ -71,7 +71,7 @@ describe('Database Resilience', () => {
       };
 
       dbManager = new DatabaseManager(mockConfig, customConfig);
-      
+
       // Configuration should be applied (we can't directly test private properties,
       // but we can test behavior that depends on them)
       expect(dbManager).toBeDefined();
@@ -86,14 +86,14 @@ describe('Database Resilience', () => {
 
     it('should report correct connection status', () => {
       const status = dbManager.getStatus();
-      
+
       expect(status).toHaveProperty('connected');
       expect(status).toHaveProperty('lastAttempt');
       expect(status).toHaveProperty('lastSuccess');
       expect(status).toHaveProperty('lastError');
       expect(status).toHaveProperty('connectionAttempts');
       expect(status).toHaveProperty('migrationStatus');
-      
+
       expect(typeof status.connected).toBe('boolean');
       expect(typeof status.connectionAttempts).toBe('number');
     });
@@ -111,7 +111,7 @@ describe('Database Resilience', () => {
   describe('Error Handling', () => {
     it('should handle database connection errors gracefully', async () => {
       // Mock a failing connection
-      const { DatabaseConnection } = await import('../../src/database/index.js');
+      const { DatabaseConnection } = await import('@database/index');
       vi.mocked(DatabaseConnection.createFromUrl).mockImplementation(() => {
         throw new Error('Connection refused');
       });
@@ -129,7 +129,7 @@ describe('Database Resilience', () => {
 
       // Should handle the error and not crash
       expect(dbManager.isConnected()).toBe(false);
-      
+
       const status = dbManager.getStatus();
       expect(status.connected).toBe(false);
     });
@@ -157,7 +157,7 @@ describe('Database Resilience', () => {
         close: vi.fn()
       };
 
-      const { DatabaseConnection } = await import('../../src/database/index.js');
+      const { DatabaseConnection } = await import('@database/index');
       vi.mocked(DatabaseConnection.createFromUrl).mockReturnValue(mockConnection as any);
 
       dbManager = new DatabaseManager(mockConfig, {
@@ -186,7 +186,7 @@ describe('Database Resilience', () => {
 
       // Should shutdown without errors
       await expect(dbManager.shutdown()).resolves.not.toThrow();
-      
+
       // Should be marked as shutting down
       expect(dbManager.isConnected()).toBe(false);
     });
@@ -231,8 +231,8 @@ describe('Database Resilience', () => {
   describe('Connection Retry Behavior', () => {
     it('should retry connection attempts with proper delays', async () => {
       let attemptCount = 0;
-      const { DatabaseConnection } = await import('../../src/database/index.js');
-      
+      const { DatabaseConnection } = await import('@database/index');
+
       vi.mocked(DatabaseConnection.createFromUrl).mockImplementation(() => {
         attemptCount++;
         if (attemptCount < 3) {

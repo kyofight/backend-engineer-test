@@ -22,7 +22,8 @@
       "@database/*": ["src/database/*"],
       "@routes/*": ["src/routes/*"],
       "@services/*": ["src/services/*"],
-      "@shared/*": ["src/types/*"]
+      "@shared/*": ["src/types/*"],
+      "@validation/*": ["src/validation/*"]
     },
 
     // Best practices

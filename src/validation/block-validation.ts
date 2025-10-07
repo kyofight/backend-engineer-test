@@ -1,4 +1,4 @@
-import type { Block, Transaction, ValidationResult } from '@shared/index.js';
+import type { Block, Transaction, ValidationResult } from '@shared/index';
 import { createHash } from 'crypto';
 
 /**

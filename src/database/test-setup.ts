@@ -1,4 +1,4 @@
-import { DatabaseConnection, createDatabaseConfig, runMigrations } from '@database/index.js';
+import { DatabaseConnection, runMigrations } from '@database/index';
 
 // Test function to verify database setup
 export async function testDatabaseSetup(databaseUrl: string): Promise<boolean> {

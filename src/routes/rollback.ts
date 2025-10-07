@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { routeSchemas } from '@config/route-schemas.js';
+import { routeSchemas } from '@config/route-schemas';
 
 // Request body schema for POST /rollback
 interface RollbackRequest {

@@ -14,6 +14,7 @@ export default defineConfig({
       '@routes': resolve(__dirname, './src/routes'),
       '@services': resolve(__dirname, './src/services'),
       '@shared': resolve(__dirname, './src/types'),
+      '@validation': resolve(__dirname, './src/validation')
     },
   },
 });

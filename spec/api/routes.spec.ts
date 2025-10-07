@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from 'vitest';
 import Fastify from 'fastify';
 import type { FastifyInstance } from 'fastify';
-import { DatabaseConnection } from '../../src/database/connection-stub.js';
-import { registerRoutes } from '../../src/routes/index.js';
-import { BlockProcessor } from '../../src/services/block-processor.js';
-import { concurrencyManager } from '../../src/services/concurrency-manager.js';
-import { errorHandler } from '../../src/services/error-handler.js';
-import { UTXORepository } from '../../src/database/repositories/utxo-repository.js';
-import { BalanceRepository } from '../../src/database/repositories/balance-repository.js';
+import { DatabaseConnection } from '@database/connection-stub';
+import { registerRoutes } from '@routes/index';
+import { BlockProcessor } from '@services/block-processor';
+import { concurrencyManager } from '@services/concurrency-manager';
+import { errorHandler } from '@services/error-handler';
+import { UTXORepository } from '@database/repositories/utxo-repository';
+import { BalanceRepository } from '@database/repositories/balance-repository';
 import crypto from 'crypto';
-import type { Block, Transaction } from '../../src/types/blockchain.js';
+import type { Block, Transaction } from '@shared/blockchain';
 
 // Type declarations moved to src/types/fastify.d.ts
 

@@ -1,14 +1,13 @@
 import Fastify, { type FastifyInstance } from 'fastify';
-import { DatabaseConnection } from '@database/index.js';
-import { registerRoutes } from '@routes/index.js';
-import { BlockProcessor } from '@services/block-processor.js';
-import { concurrencyManager } from '@services/concurrency-manager.js';
-import { errorHandler } from '@services/error-handler.js';
-import { DatabaseManager } from '@services/database-manager.js';
-import { UTXORepository } from '@database/repositories/utxo-repository.js';
-import { BalanceRepository } from '@database/repositories/balance-repository.js';
-import { loadConfig, type AppConfig } from '@config/app.config.js';
-import { swaggerOptions, swaggerUiOptions } from '@config/swagger.config.js';
+import { registerRoutes } from '@routes/index';
+import { BlockProcessor } from '@services/block-processor';
+import { concurrencyManager } from '@services/concurrency-manager';
+import { errorHandler } from '@services/error-handler';
+import { DatabaseManager } from '@services/database-manager';
+import { UTXORepository } from '@database/repositories/utxo-repository';
+import { BalanceRepository } from '@database/repositories/balance-repository';
+import { loadConfig, type AppConfig } from '@config/app.config';
+import { swaggerOptions, swaggerUiOptions } from '@config/swagger.config';
 
 // Type declarations moved to src/types/fastify.d.ts
 

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ErrorHandler, ErrorType, ErrorSeverity } from '../../src/services/error-handler.js';
+import { ErrorHandler, ErrorType, ErrorSeverity } from '@services/error-handler';
 
 describe('Error Handler Isolated Tests', () => {
   let errorHandler: ErrorHandler;

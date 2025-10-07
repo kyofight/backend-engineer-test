@@ -1,7 +1,7 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
-import { UTXORepository } from "../../src/database/repositories/utxo-repository.js";
-import type { Output, Input, UTXO } from "../../src/types/blockchain.js";
-import type { DatabaseManager } from "../../src/services/database-manager.js";
+import { UTXORepository } from "@database/repositories/utxo-repository";
+import type { Output, Input, UTXO } from "@shared/blockchain";
+import type { DatabaseManager } from "@services/database-manager";
 
 // Mock database implementation for testing
 class MockDatabaseConnection {

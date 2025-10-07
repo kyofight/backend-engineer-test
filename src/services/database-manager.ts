@@ -1,7 +1,7 @@
-import { DatabaseConnection, runMigrations } from '@database/index.js';
-import { testDatabaseSetup } from '@database/test-setup.js';
-import { errorHandler } from '@services/error-handler.js';
-import type { AppConfig } from '@config/app.config.js';
+import { DatabaseConnection, runMigrations } from '@database/index';
+import { testDatabaseSetup } from '@database/test-setup';
+import { errorHandler } from '@services/error-handler';
+import type { AppConfig } from '@config/app.config';
 
 export interface DatabaseStatus {
   connected: boolean;

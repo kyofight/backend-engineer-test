@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { routeSchemas } from '@config/route-schemas.js';
+import { routeSchemas } from '@config/route-schemas';
 
 // Request params schema for GET /balance/:address
 interface BalanceRequest {

@@ -1,7 +1,7 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
-import { BalanceRepository } from "../../src/database/repositories/balance-repository.js";
-import type { Balance, BalanceUpdate } from "../../src/types/blockchain.js";
-import type { DatabaseManager } from "../../src/services/database-manager.js";
+import { BalanceRepository } from "@database/repositories/balance-repository";
+import type { Balance, BalanceUpdate } from "@shared/blockchain";
+import type { DatabaseManager } from "@services/database-manager";
 
 // Mock database connection for testing balance operations
 class MockDatabaseConnection {

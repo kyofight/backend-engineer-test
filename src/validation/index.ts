@@ -1,1 +1,1 @@
-export * from './block-validation.js';
+export * from './block-validation';

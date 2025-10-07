@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import request from 'supertest';
-import { calculateBlockId } from '../src/validation/block-validation.js';
-import type { Block, Transaction } from '../src/types/blockchain.js';
+import { calculateBlockId } from '@validation/block-validation';
+import type { Block, Transaction } from '@shared/blockchain';
 
 /**
  * API End-to-End Tests with SuperTest

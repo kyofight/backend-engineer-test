@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import type { Block } from '@shared/blockchain.js';
-import { routeSchemas } from '@config/route-schemas.js';
+import type { Block } from '@shared/blockchain';
+import { routeSchemas } from '@config/route-schemas';
 
 // Request body schema for POST /blocks
 interface BlockRequest {

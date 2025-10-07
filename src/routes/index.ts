@@ -1,9 +1,9 @@
 import type { FastifyInstance } from 'fastify';
-import { blockRoutes } from '@routes/blocks.js';
-import { balanceRoutes } from '@routes/balance.js';
-import { rollbackRoutes } from '@routes/rollback.js';
-import { healthRoutes } from '@routes/health.js';
-import { routeSchemas } from '@config/route-schemas.js';
+import { blockRoutes } from '@routes/blocks';
+import { balanceRoutes } from '@routes/balance';
+import { rollbackRoutes } from '@routes/rollback';
+import { healthRoutes } from '@routes/health';
+import { routeSchemas } from '@config/route-schemas';
 
 export async function registerRoutes(fastify: FastifyInstance) {
   // Health check endpoint

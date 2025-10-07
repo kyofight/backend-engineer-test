@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { errorHandler } from '@services/error-handler.js';
-import { concurrencyManager } from '@services/concurrency-manager.js';
-import { routeSchemas } from '@config/route-schemas.js';
+import { errorHandler } from '@services/error-handler';
+import { concurrencyManager } from '@services/concurrency-manager';
+import { routeSchemas } from '@config/route-schemas';
 
 // Response schemas
 interface HealthResponse {
@@ -31,7 +31,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
   // GET /health - System health and monitoring endpoint
   fastify.get('/health', {
     schema: routeSchemas.healthCheck
-  }, async (request: FastifyRequest, reply: FastifyReply) => {
+  }, async (_request: FastifyRequest, reply: FastifyReply) => {
     try {
       const dbManager = fastify.dbManager;
       
@@ -107,7 +107,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
   // GET /metrics - Detailed metrics for monitoring systems
   fastify.get('/metrics', {
     schema: routeSchemas.metrics
-  }, async (request: FastifyRequest, reply: FastifyReply) => {
+  }, async (_request: FastifyRequest, reply: FastifyReply) => {
     try {
       const dbManager = fastify.dbManager;
       
