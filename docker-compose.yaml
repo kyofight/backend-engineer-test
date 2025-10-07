@@ -18,8 +18,22 @@ services:
       - db
     environment:
       DATABASE_URL: postgres://myuser:mypassword@db:5432/mydatabase
+      # Database manager configuration
+      DB_MAX_RECONNECT_ATTEMPTS: -1
+      DB_RECONNECT_BASE_DELAY_MS: 2000
+      DB_RECONNECT_MAX_DELAY_MS: 30000
+      DB_RECONNECT_BACKOFF_MULTIPLIER: 1.5
+      DB_HEALTH_CHECK_INTERVAL_MS: 30000
+      DB_CONNECTION_TIMEOUT_MS: 10000
     ports:
       - "3000:3000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 volumes:
   db_data:

@@ -4,16 +4,26 @@
   "type": "module",
   "scripts": {
     "start": "bun src/index.ts",
-    "run-docker": "docker-compose up -d --build"
+    "run-docker": "docker-compose up -d --build",
+    "test": "vitest --run --exclude e2e/*.spec.ts",
+    "test:e2e": "vitest --run e2e/*.spec.ts",
+    "docs:generate": "node scripts/generate-openapi.js"
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/pg": "^8.11.8"
+    "@types/node": "^20.0.0",
+    "@types/pg": "^8.11.8",
+    "@types/supertest": "^6.0.3",
+    "pino-pretty": "^11.0.0",
+    "supertest": "^7.1.4",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "@fastify/swagger": "^8.15.0",
+    "@fastify/swagger-ui": "^4.2.0",
     "fastify": "^4.28.1",
     "pg": "^8.12.0"
   }

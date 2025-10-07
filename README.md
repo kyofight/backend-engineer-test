@@ -143,6 +143,121 @@ You should write tests for all the operations described above. Anything you put 
 
 Here we are evaluating your capacity to understand what should be tested and how. Are you going to create abstractions and mock dependencies? Are you going to test the database layer? Are you going to test the API layer? That's all up to you.
 
+## API Documentation
+
+The API includes comprehensive OpenAPI/Swagger documentation that provides detailed information about all endpoints, request/response schemas, and examples.
+
+### Accessing the Documentation
+
+Once the application is running, you can access the interactive API documentation at:
+
+- **Swagger UI**: http://localhost:3000/docs
+- **OpenAPI Specification**: Available in `docs/openapi.yaml`
+
+### Available Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | Service status check |
+| GET | `/health` | Detailed system health information |
+| GET | `/metrics` | System metrics for monitoring |
+| POST | `/blocks` | Process a new block |
+| GET | `/balance/:address` | Get balance for a specific address |
+| POST | `/rollback` | Rollback blockchain state to a specific height |
+
+### Example API Usage
+
+```bash
+# Check service status
+curl http://localhost:3000/
+
+# Get system health
+curl http://localhost:3000/health
+
+# Get address balance
+curl http://localhost:3000/balance/addr_user123
+
+# Process a new block
+curl -X POST http://localhost:3000/blocks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "height": 1,
+    "id": "block_abc123",
+    "transactions": [{
+      "id": "tx_xyz789",
+      "inputs": [],
+      "outputs": [{
+        "address": "addr_user123",
+        "value": 100
+      }]
+    }]
+  }'
+
+# Rollback to height 10
+curl -X POST http://localhost:3000/rollback \
+  -H "Content-Type: application/json" \
+  -d '{"height": 10}'
+```
+
+## Database Resilience
+
+The application includes comprehensive database resilience features to handle connection issues gracefully:
+
+### Database-Optional Bootstrap
+
+The application **starts successfully even without a database connection**:
+
+- API server starts immediately and serves health endpoints
+- Database connection attempts continue in the background
+- Services become fully functional once database is available
+- No more bootstrap failures due to database unavailability
+
+### Automatic Database Reconnection
+
+The application automatically handles database connection loss:
+
+- **Continuous reconnection attempts** with exponential backoff
+- **Health monitoring** with periodic connection checks
+- **Graceful degradation** when database is unavailable
+- **Automatic recovery** when database becomes available again
+
+### Configuration
+
+#### Database Manager Configuration
+
+```bash
+DB_MAX_RECONNECT_ATTEMPTS=-1       # Max reconnection attempts (-1 = infinite)
+DB_RECONNECT_BASE_DELAY_MS=2000    # Base delay between reconnection attempts (ms)
+DB_RECONNECT_MAX_DELAY_MS=30000    # Maximum delay between reconnection attempts (ms)
+DB_RECONNECT_BACKOFF_MULTIPLIER=1.5 # Reconnection backoff multiplier
+DB_HEALTH_CHECK_INTERVAL_MS=30000  # Health check interval (ms)
+DB_CONNECTION_TIMEOUT_MS=10000     # Connection timeout (ms)
+```
+
+### Behavior
+
+#### Startup Without Database
+1. Application starts immediately
+2. API endpoints become available
+3. Health endpoint reports database status
+4. Database operations queue until connection is established
+5. Full functionality resumes automatically when database is ready
+
+#### Connection Loss Recovery
+1. Database connection loss is detected automatically
+2. Application continues serving non-database requests
+3. Database operations return appropriate error messages
+4. Reconnection attempts continue in background
+5. Full functionality resumes when connection is restored
+
+### API Behavior During Database Outages
+
+- **Health endpoints** (`/`, `/health`, `/metrics`) remain available
+- **Swagger documentation** (`/docs`) remains available
+- **Block processing** returns "Database not available" errors
+- **Balance queries** returns "Database not available" errors
+- **Rollback operations** returns "Database not available" errors
+
 ## Further Instructions
 - We expect you to handle errors and edge cases. Understanding what these are and how to handle them is part of the challenge;
 - We provided you with a setup to run the API and a Postgres database together using Docker, as well as some sample code to test the database connection. You can change this setup to use any other database you'd like;
