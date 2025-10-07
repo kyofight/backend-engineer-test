@@ -1,6 +1,6 @@
-import { DatabaseConnection, DatabaseTransaction } from '../connection';
-import { DatabaseManager } from '../../services/database-manager';
-import type { Balance, BalanceEntity, BalanceUpdate } from '../../types/blockchain';
+import { DatabaseConnection, DatabaseTransaction } from '@database/connection.js';
+import { DatabaseManager } from '@services/database-manager.js';
+import type { Balance, BalanceEntity, BalanceUpdate } from '@shared/blockchain.js';
 
 export class BalanceRepository {
     private dbManager: DatabaseManager;

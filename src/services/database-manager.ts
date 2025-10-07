@@ -1,7 +1,7 @@
-import { DatabaseConnection, runMigrations } from '../database/index.js';
-import { testDatabaseSetup } from '../database/test-setup.js';
-import { errorHandler } from './error-handler.js';
-import type { AppConfig } from '../config/app.config.js';
+import { DatabaseConnection, runMigrations } from '@database/index.js';
+import { testDatabaseSetup } from '@database/test-setup.js';
+import { errorHandler } from '@services/error-handler.js';
+import type { AppConfig } from '@config/app.config.js';
 
 export interface DatabaseStatus {
   connected: boolean;
@@ -82,19 +82,19 @@ export class DatabaseManager {
 
     // Start new connection attempt
     this.connectionPromise = this.connectWithRetry();
-    
+
     try {
       const connection = await this.connectionPromise;
       this.connectionPromise = null;
       return connection;
     } catch (error) {
       this.connectionPromise = null;
-      
+
       // Schedule reconnection for future attempts
       if (!this.isShuttingDown) {
         this.scheduleReconnect();
       }
-      
+
       throw error;
     }
   }
@@ -102,13 +102,13 @@ export class DatabaseManager {
   // Initialize database manager (non-blocking)
   async initialize(): Promise<void> {
     console.log('Initializing database manager...');
-    
+
     // Start connection attempt in background
     this.startConnectionAttempt();
-    
+
     // Start health check timer
     this.startHealthCheck();
-    
+
     console.log('Database manager initialized (connection will be established in background)');
   }
 
@@ -126,13 +126,13 @@ export class DatabaseManager {
       })
       .catch((error) => {
         this.connectionPromise = null;
-        
+
         // If connection failed and we're not shutting down, schedule another attempt
         if (!this.isShuttingDown) {
           console.log('Connection attempt failed, scheduling retry...');
           this.scheduleReconnect();
         }
-        
+
         throw error;
       });
   }
@@ -141,7 +141,7 @@ export class DatabaseManager {
   private async connectWithRetry(): Promise<DatabaseConnection> {
     const maxImmediateRetries = 3; // Limit immediate retries, rely on scheduleReconnect for long-term
     let attempt = 0;
-    
+
     while (!this.isShuttingDown && attempt < maxImmediateRetries) {
       attempt++;
       this.status.connectionAttempts++;
@@ -149,46 +149,46 @@ export class DatabaseManager {
 
       try {
         console.log(`Database connection attempt ${this.status.connectionAttempts}...`);
-        
+
         // Create new connection
         const db = await this.createConnection();
-        
+
         // Run migrations if needed
         await this.runMigrations();
-        
+
         // Validate setup
         await this.validateSetup();
-        
+
         // Success!
         this.db = db;
         this.status.connected = true;
         this.status.lastSuccess = new Date();
         this.status.lastError = null;
         this.status.migrationStatus = 'completed';
-        
+
         // Reset reconnect attempts counter on successful connection
         this.reconnectAttempts = 0;
-        
+
         console.log(`Database connected successfully on attempt ${this.status.connectionAttempts}`);
-        
+
         // Setup connection monitoring
         this.setupConnectionMonitoring();
-        
+
         return db;
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         this.status.lastError = errorMessage;
         this.status.connected = false;
-        
+
         console.warn(`Database connection attempt ${this.status.connectionAttempts} failed: ${errorMessage}`);
-        
+
         // Log structured error
         errorHandler.createStructuredError(
           error instanceof Error ? error : new Error(errorMessage),
           {
             operation: 'database_connection',
-            additionalData: { 
+            additionalData: {
               attempt: this.status.connectionAttempts,
               databaseUrl: this.config.databaseUrl.replace(/:[^:@]*@/, ':***@') // Hide password
             }
@@ -208,7 +208,7 @@ export class DatabaseManager {
     if (this.isShuttingDown) {
       throw new Error('Database connection aborted due to shutdown');
     }
-    
+
     throw new Error(`Failed to connect to database after ${maxImmediateRetries} immediate attempts. Last error: ${this.status.lastError}`);
   }
 
@@ -216,14 +216,14 @@ export class DatabaseManager {
   private async createConnection(): Promise<DatabaseConnection> {
     const db = DatabaseConnection.createFromUrl(this.config.databaseUrl);
     let connectionClosed = false;
-    
+
     // Test connection with timeout
     const timeoutPromise = new Promise<never>((_, reject) => {
       setTimeout(() => reject(new Error('Database connection timeout')), this.managerConfig.connectionTimeoutMs);
     });
-    
+
     const queryPromise = db.getPool().query('SELECT 1');
-    
+
     try {
       await Promise.race([queryPromise, timeoutPromise]);
       return db;
@@ -246,7 +246,7 @@ export class DatabaseManager {
   // Run database migrations
   private async runMigrations(): Promise<void> {
     this.status.migrationStatus = 'running';
-    
+
     try {
       console.log('Running database migrations...');
       await runMigrations();
@@ -261,12 +261,12 @@ export class DatabaseManager {
   // Validate database setup
   private async validateSetup(): Promise<void> {
     console.log('Validating database setup...');
-    
+
     const setupSuccess = await testDatabaseSetup(this.config.databaseUrl);
     if (!setupSuccess) {
       throw new Error('Database setup validation failed');
     }
-    
+
     console.log('Database setup validation completed successfully');
   }
 
@@ -289,14 +289,14 @@ export class DatabaseManager {
   // Handle connection loss
   private handleConnectionLoss(error: Error): void {
     console.warn('Database connection lost:', error.message);
-    
+
     this.status.connected = false;
     this.status.lastError = error.message;
-    
+
     // Log structured error
     errorHandler.createStructuredError(error, {
       operation: 'database_connection_lost',
-      additionalData: { 
+      additionalData: {
         databaseUrl: this.config.databaseUrl.replace(/:[^:@]*@/, ':***@')
       }
     });
@@ -312,8 +312,8 @@ export class DatabaseManager {
     }
 
     // Check if we've exceeded max reconnect attempts (if configured)
-    if (this.managerConfig.maxReconnectAttempts > 0 && 
-        this.reconnectAttempts >= this.managerConfig.maxReconnectAttempts) {
+    if (this.managerConfig.maxReconnectAttempts > 0 &&
+      this.reconnectAttempts >= this.managerConfig.maxReconnectAttempts) {
       console.error(`Maximum reconnection attempts (${this.managerConfig.maxReconnectAttempts}) exceeded. Stopping reconnection attempts.`);
       return;
     }
@@ -321,7 +321,7 @@ export class DatabaseManager {
     this.reconnectAttempts++;
     const delay = this.calculateReconnectDelay(this.reconnectAttempts);
     console.log(`Scheduling database reconnection attempt ${this.reconnectAttempts} in ${delay}ms...`);
-    
+
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       this.startConnectionAttempt();
@@ -347,7 +347,7 @@ export class DatabaseManager {
 
     try {
       await this.db.getPool().query('SELECT 1');
-      
+
       // Update status if we weren't connected before
       if (!this.status.connected) {
         this.status.connected = true;
@@ -365,8 +365,8 @@ export class DatabaseManager {
 
   // Calculate reconnection delay with exponential backoff
   private calculateReconnectDelay(attempt: number): number {
-    const delay = this.managerConfig.reconnectBaseDelayMs * 
-                  Math.pow(this.managerConfig.reconnectBackoffMultiplier, attempt - 1);
+    const delay = this.managerConfig.reconnectBaseDelayMs *
+      Math.pow(this.managerConfig.reconnectBackoffMultiplier, attempt - 1);
     return Math.min(delay, this.managerConfig.reconnectMaxDelayMs);
   }
 
@@ -378,7 +378,7 @@ export class DatabaseManager {
   // Shutdown database manager
   async shutdown(): Promise<void> {
     console.log('Shutting down database manager...');
-    
+
     this.isShuttingDown = true;
 
     // Clear timers

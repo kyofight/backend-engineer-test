@@ -1,6 +1,6 @@
-import { DatabaseConnection, DatabaseTransaction } from '../connection';
-import { DatabaseManager } from '../../services/database-manager';
-import type { UTXO, Input, Output } from '../../types/blockchain';
+import { DatabaseConnection, DatabaseTransaction } from '@database/connection.js';
+import { DatabaseManager } from '@services/database-manager.js';
+import type { UTXO, Input, Output } from '@shared/blockchain.js';
 
 export class UTXORepository {
     private dbManager: DatabaseManager;

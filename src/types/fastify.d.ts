@@ -1,8 +1,8 @@
-import { DatabaseConnection } from '../database/connection';
-import { DatabaseManager } from '../services/database-manager';
-import { BlockProcessor } from '../services/block-processor';
-import { UTXORepository } from '../database/repositories/utxo-repository';
-import { BalanceRepository } from '../database/repositories/balance-repository';
+import { DatabaseConnection } from '@database/connection.js';
+import { DatabaseManager } from '@services/database-manager.js';
+import { BlockProcessor } from '@services/block-processor.js';
+import { UTXORepository } from '@database/repositories/utxo-repository.js';
+import { BalanceRepository } from '@database/repositories/balance-repository.js';
 
 declare module 'fastify' {
   interface FastifyInstance {

@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import { errorHandler } from '../services/error-handler.js';
-import { concurrencyManager } from '../services/concurrency-manager.js';
+import { errorHandler } from '@services/error-handler.js';
+import { concurrencyManager } from '@services/concurrency-manager.js';
+import { routeSchemas } from '@config/route-schemas.js';
 
 // Response schemas
 interface HealthResponse {
@@ -29,53 +30,7 @@ interface HealthResponse {
 export async function healthRoutes(fastify: FastifyInstance) {
   // GET /health - System health and monitoring endpoint
   fastify.get('/health', {
-    schema: {
-      tags: ['Health'],
-      summary: 'System health check',
-      description: 'Get detailed system health information including database status, concurrency metrics, and error statistics',
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            status: { type: 'string', enum: ['healthy', 'degraded', 'unhealthy'] },
-            timestamp: { type: 'string' },
-            uptime: { type: 'number' },
-            database: {
-              type: 'object',
-              properties: {
-                connected: { type: 'boolean' },
-                connectionCount: { type: 'number' }
-              }
-            },
-            concurrency: {
-              type: 'object',
-              properties: {
-                queueLength: { type: 'number' },
-                isProcessingBlocks: { type: 'boolean' },
-                rollbackInProgress: { type: 'boolean' }
-              }
-            },
-            errors: {
-              type: 'object',
-              properties: {
-                totalErrors: { type: 'number' },
-                recentErrors: { type: 'number' },
-                dailyErrors: { type: 'number' },
-                errorsByType: { type: 'object' },
-                errorsBySeverity: { type: 'object' },
-                lastError: { type: 'object' }
-              }
-            }
-          }
-        },
-        500: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' }
-          }
-        }
-      }
-    }
+    schema: routeSchemas.healthCheck
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const dbManager = fastify.dbManager;
@@ -151,24 +106,7 @@ export async function healthRoutes(fastify: FastifyInstance) {
 
   // GET /metrics - Detailed metrics for monitoring systems
   fastify.get('/metrics', {
-    schema: {
-      tags: ['Health'],
-      summary: 'System metrics',
-      description: 'Get detailed system metrics for monitoring and observability',
-      response: {
-        200: {
-          type: 'object',
-          additionalProperties: { type: 'number' },
-          description: 'Key-value pairs of system metrics'
-        },
-        500: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' }
-          }
-        }
-      }
-    }
+    schema: routeSchemas.metrics
   }, async (request: FastifyRequest, reply: FastifyReply) => {
     try {
       const dbManager = fastify.dbManager;

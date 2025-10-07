@@ -1,4 +1,4 @@
-import { DatabaseConnection, getDatabaseConfigFromEnv, createDatabaseConfig } from './index.js';
+import { DatabaseConnection, getDatabaseConfigFromEnv, createDatabaseConfig } from '@database/index.js';
 
 async function runMigrations() {
   try {

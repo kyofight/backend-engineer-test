@@ -32,11 +32,34 @@ export const routeSchemas = {
             type: "string",
             enum: ["healthy", "degraded", "unhealthy"],
           },
-          timestamp: { type: "string", format: "date-time" },
+          timestamp: { type: "string" },
           uptime: { type: "number" },
-          database: { type: "object" },
-          concurrency: { type: "object" },
-          errors: { type: "object" },
+          database: {
+            type: "object",
+            properties: {
+              connected: { type: "boolean" },
+              connectionCount: { type: "number" },
+            },
+          },
+          concurrency: {
+            type: "object",
+            properties: {
+              queueLength: { type: "number" },
+              isProcessingBlocks: { type: "boolean" },
+              rollbackInProgress: { type: "boolean" },
+            },
+          },
+          errors: {
+            type: "object",
+            properties: {
+              totalErrors: { type: "number" },
+              recentErrors: { type: "number" },
+              dailyErrors: { type: "number" },
+              errorsByType: { type: "object" },
+              errorsBySeverity: { type: "object" },
+              lastError: { type: "object" },
+            },
+          },
         },
       },
       500: {
@@ -209,9 +232,8 @@ export const routeSchemas = {
       required: ["height"],
       properties: {
         height: {
-          type: "number",
-          minimum: 0,
-          description: "Target height to rollback to",
+          description: "Target height to rollback to"
+          // Allow any type for custom validation in handler
         },
       },
     },

@@ -1,10 +1,10 @@
-import type { Block, Transaction, ProcessingResult, ValidationResult } from '../types/blockchain.js';
-import { DatabaseConnection, DatabaseTransaction } from '../database/connection.js';
-import { DatabaseManager } from './database-manager.js';
-import { UTXORepository } from '../database/repositories/utxo-repository.js';
-import { BalanceRepository } from '../database/repositories/balance-repository.js';
-import { concurrencyManager } from './concurrency-manager.js';
-import { errorHandler } from './error-handler.js';
+import type { Block, Transaction, ProcessingResult, ValidationResult } from '@shared/blockchain.js';
+import { DatabaseConnection, DatabaseTransaction } from '@database/connection.js';
+import { DatabaseManager } from '@services/database-manager.js';
+import { UTXORepository } from '@database/repositories/utxo-repository.js';
+import { BalanceRepository } from '@database/repositories/balance-repository.js';
+import { concurrencyManager } from '@services/concurrency-manager.js';
+import { errorHandler } from '@services/error-handler.js';
 import {
     validateBlockHeight,
     validateBlockId,

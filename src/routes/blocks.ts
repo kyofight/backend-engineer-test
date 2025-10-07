@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
-import type { Block } from '../types/blockchain.js';
+import type { Block } from '@shared/blockchain.js';
+import { routeSchemas } from '@config/route-schemas.js';
 
 // Request body schema for POST /blocks
 interface BlockRequest {
@@ -25,85 +26,7 @@ export async function blockRoutes(fastify: FastifyInstance) {
 
   // POST /blocks - Process a new block
   fastify.post<BlockRequest>('/blocks', {
-    schema: {
-      tags: ['Blocks'],
-      summary: 'Process a new block',
-      description: 'Submit a new block for processing and indexing in the blockchain',
-      body: {
-        type: 'object',
-        required: ['height', 'id', 'transactions'],
-        properties: {
-          height: { type: 'number', minimum: 1 },
-          id: { type: 'string', minLength: 1 },
-          transactions: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['id', 'inputs', 'outputs'],
-              properties: {
-                id: { type: 'string', minLength: 1 },
-                inputs: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    required: ['txId', 'index'],
-                    properties: {
-                      txId: { type: 'string', minLength: 1 },
-                      index: { type: 'number', minimum: 0 }
-                    }
-                  }
-                },
-                outputs: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    required: ['address', 'value'],
-                    properties: {
-                      address: { type: 'string', minLength: 1 },
-                      value: { type: 'number', minimum: 0 }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            blockHeight: { type: 'number' },
-            message: { type: 'string' }
-          }
-        },
-        400: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            blockHeight: { type: 'number' }
-          }
-        },
-        409: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            blockHeight: { type: 'number' }
-          }
-        },
-        500: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            blockHeight: { type: 'number' }
-          }
-        }
-      }
-    }
+    schema: routeSchemas.processBlock
   }, async (request: FastifyRequest<BlockRequest>, reply: FastifyReply) => {
     try {
       const block = request.body;

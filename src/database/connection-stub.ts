@@ -29,7 +29,7 @@ export class DatabaseConnection {
     private pool: Pool;
     private static instance: DatabaseConnection;
 
-    private constructor(config: PoolConfig) {
+    private constructor(_config: PoolConfig) {
         // This is a stub - replace with actual pg.Pool when dependencies are installed
         this.pool = {
             connect: async () => ({
@@ -237,8 +237,8 @@ export class DatabaseConnection {
         // Handle transaction input inserts
         if (sql.includes('insert into transaction_inputs')) {
             const [transactionId, utxoTxId, utxoIndex, inputIndex] = params || [];
-            const key = `${transactionId}:${inputIndex}`;
-            storage.transaction_inputs.set(key, {
+            const inputKey = `${transactionId}:${inputIndex}`;
+            storage.transaction_inputs.set(inputKey, {
                 transaction_id: transactionId,
                 utxo_tx_id: utxoTxId,
                 utxo_index: utxoIndex,
@@ -276,9 +276,9 @@ export class DatabaseConnection {
                     }
                 }
                 
-                for (const [key, input] of storage.transaction_inputs) {
+                for (const [inputKey, input] of storage.transaction_inputs) {
                     if (txsToRemove.includes(input.transaction_id)) {
-                        storage.transaction_inputs.delete(key);
+                        storage.transaction_inputs.delete(inputKey);
                     }
                 }
             }

@@ -428,20 +428,58 @@
                       ]
                     },
                     "timestamp": {
-                      "type": "string",
-                      "format": "date-time"
+                      "type": "string"
                     },
                     "uptime": {
                       "type": "number"
                     },
                     "database": {
-                      "type": "object"
+                      "type": "object",
+                      "properties": {
+                        "connected": {
+                          "type": "boolean"
+                        },
+                        "connectionCount": {
+                          "type": "number"
+                        }
+                      }
                     },
                     "concurrency": {
-                      "type": "object"
+                      "type": "object",
+                      "properties": {
+                        "queueLength": {
+                          "type": "number"
+                        },
+                        "isProcessingBlocks": {
+                          "type": "boolean"
+                        },
+                        "rollbackInProgress": {
+                          "type": "boolean"
+                        }
+                      }
                     },
                     "errors": {
-                      "type": "object"
+                      "type": "object",
+                      "properties": {
+                        "totalErrors": {
+                          "type": "number"
+                        },
+                        "recentErrors": {
+                          "type": "number"
+                        },
+                        "dailyErrors": {
+                          "type": "number"
+                        },
+                        "errorsByType": {
+                          "type": "object"
+                        },
+                        "errorsBySeverity": {
+                          "type": "object"
+                        },
+                        "lastError": {
+                          "type": "object"
+                        }
+                      }
                     }
                   }
                 }
@@ -797,8 +835,6 @@
                 ],
                 "properties": {
                   "height": {
-                    "type": "number",
-                    "minimum": 0,
                     "description": "Target height to rollback to"
                   }
                 }

@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { routeSchemas } from '@config/route-schemas.js';
 
 // Request body schema for POST /rollback
 interface RollbackRequest {
@@ -26,52 +27,7 @@ export async function rollbackRoutes(fastify: FastifyInstance) {
 
   // POST /rollback - Rollback blockchain state to a specific height
   fastify.post<RollbackRequest>('/rollback', {
-    schema: {
-      tags: ['Rollback'],
-      summary: 'Rollback blockchain state',
-      description: 'Rollback the blockchain state to a specific height, removing all blocks and transactions above that height',
-      body: {
-        type: 'object',
-        required: ['height'],
-        properties: {
-          height: {} // Allow any type, validate in handler
-        }
-      },
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            newHeight: { type: 'number' },
-            message: { type: 'string' }
-          }
-        },
-        400: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            targetHeight: { type: 'number' }
-          }
-        },
-        409: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            targetHeight: { type: 'number' }
-          }
-        },
-        500: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            targetHeight: { type: 'number' }
-          }
-        }
-      }
-    }
+    schema: routeSchemas.rollback
   }, async (request: FastifyRequest<RollbackRequest>, reply: FastifyReply) => {
     try {
       const { height } = request.body;

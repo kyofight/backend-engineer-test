@@ -14,6 +14,17 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
+    // Path mapping
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@config/*": ["src/config/*"],
+      "@database/*": ["src/database/*"],
+      "@routes/*": ["src/routes/*"],
+      "@services/*": ["src/services/*"],
+      "@shared/*": ["src/types/*"]
+    },
+
     // Best practices
     "strict": true,
     "skipLibCheck": true,

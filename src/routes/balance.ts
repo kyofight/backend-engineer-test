@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import { routeSchemas } from '@config/route-schemas.js';
 
 // Request params schema for GET /balance/:address
 interface BalanceRequest {
@@ -24,54 +25,7 @@ export async function balanceRoutes(fastify: FastifyInstance) {
 
   // GET /balance/:address - Get balance for a specific address
   fastify.get<BalanceRequest>('/balance/:address', {
-    schema: {
-      tags: ['Balance'],
-      summary: 'Get address balance',
-      description: 'Retrieve the current balance for a specific blockchain address',
-      params: {
-        type: 'object',
-        required: ['address'],
-        properties: {
-          address: { 
-            type: 'string',
-            description: 'Blockchain address to query'
-            // Remove minLength and maxLength to allow all strings through
-            // We'll validate in the handler instead
-          }
-        }
-      },
-      response: {
-        200: {
-          type: 'object',
-          properties: {
-            address: { type: 'string' },
-            balance: { type: 'number' }
-          }
-        },
-        400: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            address: { type: 'string' }
-          }
-        },
-        500: {
-          type: 'object',
-          properties: {
-            success: { type: 'boolean' },
-            error: { type: 'string' },
-            address: { type: 'string' }
-          }
-        },
-        503: {
-          type: 'object',
-          properties: {
-            error: { type: 'string' }
-          }
-        }
-      }
-    }
+    schema: routeSchemas.getBalance
   }, async (request: FastifyRequest<BalanceRequest>, reply: FastifyReply) => {
     try {
       // Check if balance queries are safe to execute
